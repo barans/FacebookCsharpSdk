@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace FacebookClient
+namespace Facebook
 {
     interface IFacebookClient
     {
@@ -12,9 +12,9 @@ namespace FacebookClient
         string getApiSecret();
         string getAppId();
         Uri getLoginStatusUrl();
-        Uri getLoginUrl();
+        Uri getLoginUrl(Dictionary<string, object> prms);
         Uri getLogoutUrl();
-        string getSignedRequest();
+        Dictionary<string, object> getSignedRequest();
         ulong getUser();
         void setAccessToken(string accessToken);
         void setApiSecret(string apiSecret);

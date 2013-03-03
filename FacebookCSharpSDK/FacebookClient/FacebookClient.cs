@@ -1,23 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Web;
-using System.Runtime.Serialization;
 using System.Web.Script.Serialization;
 using System.Security.Cryptography;
 
-namespace FacebookClient
+namespace Facebook
 {
     public class FacebookClient : IFacebookClient
     {
         private string appId;
         private string appSecret;
-        private ulong user;
-        private string signedRequest;
+        private ulong? user;
+        private Dictionary<string, object> signedRequest;
         private string accessToken;
         private bool fileUploadSupport;
 
+        
+        public FacebookClient(Dictionary<string, object> config)
+        {
+            setAppId(Convert.ToString(config["appId"]));
+            setApiSecret(Convert.ToString(config["secret"]));
+
+            if (config.ContainsKey("fileUpload"))
+                fileUploadSupport = true;
+        }
         public void setAppId(string appId)
         {
             this.appId = appId;
@@ -53,9 +60,9 @@ namespace FacebookClient
             return fileUploadSupport;
         }
 
-        public string getSignedRequest()
+        public Dictionary<string, object> getSignedRequest()
         {
-            if (string.IsNullOrEmpty(signedRequest))
+            if (signedRequest == null)
             {
                 string signedRequestString = HttpContext.Current.Request["signed_request"];
                 if (!string.IsNullOrEmpty(signedRequestString))
@@ -68,33 +75,68 @@ namespace FacebookClient
 
         public ulong getUser()
         {
-            
+            if (user != null)
+                return user.Value;
+
+            var sigReq = getSignedRequest();
+            if(sigReq.ContainsKey("user_id"))
+            {
+                user = Convert.ToUInt64(sigReq["user_id"]);
+                return user.Value;
+            }
+            return 0;
         }
 
         public Uri getLogoutUrl()
         {
-            
+            return new UriBuilder().Uri;
         }
 
-        private string parseSignedRequest(string signedRequestString)
+        public Uri getLoginUrl(Dictionary<string, object> prms)
+        {
+            Uri currentUri = getCurrentUrl();
+            //http://developers.facebook.com/docs/howtos/login/server-side-login/
+            if(prms.ContainsKey("scope"));
+                
+            return new UriBuilder().Uri;
+        }
+
+        
+
+        public Uri getLoginStatusUrl()
+        {
+            return new UriBuilder().Uri;
+        }
+
+        public string getAccessToken()
+        {
+            return string.Empty;
+        }
+
+        public string api()
+        {
+            return string.Empty;
+        }
+
+        private Dictionary<string, object> parseSignedRequest(string signedRequestString)
         {
             string[] signedRequest = signedRequestString.Split('.');
             string hmacString = signedRequest[0];
             string jsonObject = signedRequest[1];
 
             string signature = base64UrlDecode(hmacString);
-            var data = jsonDecode(jsonObject);
+            var data = jsonDecode(base64UrlDecode(jsonObject));
 
             if (data.ContainsKey("algorithm"))
             {
                 if (data["algorithm"].ToString().ToUpper() == "HMAC-SHA256")
                 {
-                    string expectedSignature = hashHmac("sha256", jsonObject, this.appSecret);
+                    string expectedSignature = hashHmac("sha256", jsonObject, getApiSecret());
 
                     if (expectedSignature != signature)
                         return null;
                     else
-                        return expectedSignature;
+                        return data;
                 }
                 else
                 {
@@ -115,13 +157,15 @@ namespace FacebookClient
             var hmacsha256 = new HMACSHA256(Encoding.UTF8.GetBytes(password));
             var array = hmacsha256.ComputeHash(Encoding.UTF8.GetBytes(jsonObject));
 
-            return UTF8Encoding.ASCII.GetString(array);
+            return Encoding.Default.GetString(array);
         }
 
         private string base64UrlDecode(string hmacString)
         {
-            UTF8Encoding.ASCII.GetString(Convert.FromBase64String(hmacString.Replace('-', '+').Replace('_', '/')));
-            return string.Empty;
+            string replaced = hmacString.Replace('-', '+').Replace('_', '/');
+            replaced = replaced.PadRight(replaced.Length + (4 - replaced.Length % 4) % 4, '=');
+            var byteArray = Convert.FromBase64String(replaced);
+            return Encoding.Default.GetString(byteArray);
         }
 
         private Dictionary<string, object> jsonDecode(string jsonObject)
@@ -132,5 +176,15 @@ namespace FacebookClient
             return jObject;
         }
 
+        private Uri getCurrentUrl()
+        {
+            var protocol = HttpContext.Current.Request.Url.Scheme;
+            var host = HttpContext.Current.Request.Url.Host;
+            var port = HttpContext.Current.Request.Url.Port;
+            var page = HttpContext.Current.Request.Url.PathAndQuery;
+
+            var currentUri = new UriBuilder(protocol, host, port, page);
+            return currentUri.Uri;
+        }
     }   
 }

@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using FacebookClient;
+using FacebookCSharpSDK;
+using Facebook;
 
 namespace FacebookCSharpSDK
 {
@@ -10,7 +11,15 @@ namespace FacebookCSharpSDK
     {
         static void Main(string[] args)
         {
-            FacebookClient.FacebookClient client = new FacebookClient.FacebookClient();
+            var config = new Dictionary<string, object>() { 
+                {"appId", "395580793811588"},
+                {"secret", "4c1d099f9377b52eb7905f3bf10fe77b"},
+                {"fileUpload", true}
+            };
+
+            FacebookClient client = new FacebookClient(config);
+
+
             client.getSignedRequest();
         }
     }
