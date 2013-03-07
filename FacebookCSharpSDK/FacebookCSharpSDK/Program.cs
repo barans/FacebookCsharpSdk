@@ -20,7 +20,14 @@ namespace FacebookCSharpSDK
             FacebookClient client = new FacebookClient(config);
 
 
-            client.getSignedRequest();
+            //client.getSignedRequest();
+
+            var loginPrms = new Dictionary<string, object>() { 
+                {"scope", new string[] {"email","user_birthday"}},
+                {"redirect_uri", "http://apps.facebook.com/exampleapp"},
+                {"state", "randomstring"}
+            };
+            client.getLoginUrl(loginPrms);
         }
     }
 }

@@ -12,6 +12,7 @@
     <AssemblyName>FacebookClient</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -42,6 +43,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FacebookApiMethodType.cs" />
+    <Compile Include="FacebookBatchRequestObject.cs" />
+    <Compile Include="FacebookExtendedPermissions.cs" />
+    <Compile Include="FacebookFQLTables.cs" />
+    <Compile Include="FacebookFriendDataPermissions.cs" />
+    <Compile Include="FacebookGraphApiRequest.cs" />
+    <Compile Include="FacebookUserDataPermissions.cs" />
     <Compile Include="FacebookApiException.cs" />
     <Compile Include="FacebookClient.cs" />
     <Compile Include="IFacebookClient.cs" />
