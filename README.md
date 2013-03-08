@@ -3,6 +3,9 @@ FacebookCsharpSdk
 Facebook C# SDK is implementing the methods in Facebook's Official PHP SDK. 
 It supports single graph api calls batch graph api calls, single and multiple fql queries 
 
+You can download dll from
+http://nuget.org/packages/Facebook.CSharp.SDK/
+
 All methods and examples are below.
 
 
