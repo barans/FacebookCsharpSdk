@@ -232,6 +232,7 @@ namespace Facebook
         private string getUserAccessToken()
         {
             var signedRequest = this.signedRequest;
+
             if (signedRequest != null)
             {
                 if (signedRequest.ContainsKey("oauth_token"))
@@ -239,12 +240,12 @@ namespace Facebook
                     accessToken = signedRequest["oauth_token"].ToString();
                     return signedRequest["oauth_token"].ToString();
                 }
-            }
 
-            if (signedRequest.ContainsKey("code"))
-            {
-                string accToken = getAccessTokenFromCode(signedRequest["code"].ToString());
-                return accToken;
+                if (signedRequest.ContainsKey("code"))
+                {
+                    string accToken = getAccessTokenFromCode(signedRequest["code"].ToString());
+                    return accToken;
+                }
             }
             return null;
         }
